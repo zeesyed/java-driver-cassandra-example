@@ -13,14 +13,14 @@ public class ValidateCluster {
     public static void main(String[] args) {
         Cluster validateCluster = null;
 
-        String csvFile = "C:\\Users\\zsyed\\Downloads\\flights\\flights_from_pg.csv";                                   //Parse
-        String line = "";                                                                                               //Parse
-        String cvsSplitBy = ",";                                                                                        //Parse
+        String csvFile = "C:\\Users\\zsyed\\Downloads\\flights\\flights_from_pg.csv"; // Parse
+        String line = ""; // Parse
+        String cvsSplitBy = ","; // Parse
 
         try {
             validateCluster = validateCluster.builder() // (1)
                     .addContactPoint("10.2.2.109")
-                    //.withPort(9160)
+                    // .withPort(9160)
                     .build();
             Session session = validateCluster.connect("testflight01"); // (2)
 
@@ -29,18 +29,18 @@ public class ValidateCluster {
 
             System.out.println(row.getString("release_version")); // (4)
 
-            //date1_fl_date
+            // date1_fl_date
             String sDate1 = "2012/11/11";
             SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy/MM/dd");
             formatter1.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date date1_fl_date = formatter1.parse(sDate1);
-            //date3_dep_arr_date
+            // date3_dep_arr_date
             String sDate3 = "1234";
             SimpleDateFormat formatter3 = new SimpleDateFormat("yyyy/MM/ddHHmm");
             formatter3.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date date3_dep_arr_date = formatter3.parse(sDate1 + sDate3);
             System.out.println(date3_dep_arr_date);
-            //date5_actl_air_date
+            // date5_actl_air_date
             int sDate5 = 124;
             String sDateConvert4 = minutestoHHmm(sDate5);
             SimpleDateFormat formatter5 = new SimpleDateFormat("yyyy/MM/ddHHmm");
@@ -55,7 +55,8 @@ public class ValidateCluster {
                     // use comma as separator
                     String[] flights = line.split(cvsSplitBy);
 
-                    //System.out.println("flights [CARRIER= " + flights[5] + " , FL_NUM=" + flights[6] + "]");
+                    // System.out.println("flights [CARRIER= " + flights[5] + " , FL_NUM=" +
+                    // flights[6] + "]");
 
                     int ID = Integer.valueOf(flights[0]).intValue();
                     int YEAR = Integer.valueOf(flights[1]).intValue();
@@ -74,27 +75,30 @@ public class ValidateCluster {
 
                     PreparedStatement statement = session.prepare(
 
-                            "INSERT INTO flights" + "(ID , YEAR ,DAY_OF_MONTH , FL_DATE , AIRLINE_ID , CARRIER , FL_NUM , ORIGIN_AIRPORT_ID , ORIGIN , ORIGIN_CITY_NAME , ORIGIN_STATE_ABR , DEST , DEST_CITY_NAME , DEST_STATE_ABR , DEP_TIME , ARR_TIME , ACTUAL_ELAPSED_TIME , AIR_TIME , DISTANCE)" +
-                                    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);");
+                            "INSERT INTO flights"
+                                    + "(ID , YEAR ,DAY_OF_MONTH , FL_DATE , AIRLINE_ID , CARRIER , FL_NUM , ORIGIN_AIRPORT_ID , ORIGIN , ORIGIN_CITY_NAME , ORIGIN_STATE_ABR , DEST , DEST_CITY_NAME , DEST_STATE_ABR , DEP_TIME , ARR_TIME , ACTUAL_ELAPSED_TIME , AIR_TIME , DISTANCE)"
+                                    + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);");
 
                     BoundStatement boundStatement = new BoundStatement(statement);
-                    session.execute(boundStatement.bind(ID, YEAR, DAY_OF_MONTH, date1_fl_date, AIRLINE_ID, CARRIER, FL_NUM, ORIGIN_AIRPORT_ID, ORIGIN, ORIGIN_CITY_NAME, ORIGIN_STATE_ABR, DEST, DEST_CITY_NAME, DEST_STATE_ABR, new Date(), new Date(), new Date(), new Date(), DISTANCE));
+                    session.execute(boundStatement.bind(ID, YEAR, DAY_OF_MONTH, date1_fl_date, AIRLINE_ID, CARRIER,
+                            FL_NUM, ORIGIN_AIRPORT_ID, ORIGIN, ORIGIN_CITY_NAME, ORIGIN_STATE_ABR, DEST, DEST_CITY_NAME,
+                            DEST_STATE_ABR, new Date(), new Date(), new Date(), new Date(), DISTANCE));
                 }
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if (validateCluster != null) validateCluster.close(); // (5)
+            if (validateCluster != null)
+                validateCluster.close(); // (5)
         }
     }
 
     private static String minutestoHHmm(int t) {
-        int hours = t / 60; //since both are ints, you get an int
+        int hours = t / 60; // since both are ints, you get an int
         int minutes = t % 60;
         String hrs = String.format("%02d", hours);
         String mins = String.format("%02d", minutes);
